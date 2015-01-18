@@ -1,0 +1,9 @@
+env = Environment(
+    CXXFLAGS = ["-std=c++14", "-Wall", "-g", "-O2"],
+    CPPPATH = ['/usr/local/include'],
+    LIBPATH = ['/usr/local/lib'],
+    LIBS = ['magellan', 'pthread']
+)
+
+env.Program('run_server', ['run_server.cpp'])
+env.Program('run_client', ['run_client.cpp'])
