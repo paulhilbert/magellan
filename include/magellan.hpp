@@ -3,5 +3,6 @@
 
 #include "server.hpp"
 #include "base_session.hpp"
+#include "monad.hpp"
 
 #endif /* MAGELLAN_MAGELLAN_HPP_ */
