@@ -20,11 +20,6 @@ struct monad {
 
     template <typename... Args>
     static auto last_of(state_t<Args...> state) -> decltype(std::ref(std::get<std::tuple_size<std::tuple<Args...>>::value - 1>(*state)));
-
-    template <typename Next, typename Func, typename... Args>
-    void bind(state_t<Args...> state, Func&& func) {
-        dynamic_cast<Derived*>(this)->fmap(state, [&, state] (Next&& next) { func(join(state, next)); });
-    }
 };
 
 #include "monad.ipp"
