@@ -21,11 +21,11 @@ endif()
 
 file (GLOB_RECURSE obj RELATIVE "${PROJECT_SOURCE_DIR}" "src/*.cpp")
 #if (ASIO_FOUND)
-    add_library(magellan SHARED ${obj})
-    target_link_libraries(magellan "dl")
+    #add_library(magellan SHARED ${obj})
+    #target_link_libraries(magellan "dl")
 
 	# install binary
-    install (TARGETS magellan DESTINATION lib)
+    #install (TARGETS magellan DESTINATION lib)
 	# install header
     install (DIRECTORY include/ DESTINATION include/magellan)
 #endif()

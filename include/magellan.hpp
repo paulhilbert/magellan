@@ -1,8 +1,6 @@
-#ifndef MAGELLAN_MAGELLAN_HPP_
-#define MAGELLAN_MAGELLAN_HPP_
+#ifndef MAGELLAN_GLOBAL_INC_HPP_
+#define MAGELLAN_GLOBAL_INC_HPP_
 
 #include "server.hpp"
-#include "base_session.hpp"
-#include "monad.hpp"
 
-#endif /* MAGELLAN_MAGELLAN_HPP_ */
+#endif /* MAGELLAN_GLOBAL_INC_HPP_ */
