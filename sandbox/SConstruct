@@ -1,5 +1,5 @@
 env = Environment(
-    CXXFLAGS = ["-std=c++14", "-Wall", "-g", "-O2"],
+    CXXFLAGS = ["-std=c++14", "-Wall", "-g", "-O0"],
     CPPPATH = ['/usr/local/include'],
     LIBPATH = ['/usr/local/lib'],
     LIBS = ['pthread']
