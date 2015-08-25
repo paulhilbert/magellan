@@ -12,3 +12,11 @@ inline void server<Kernel>::handle_accept(const asio::error_code& e, connection:
 
     connection::start_accept_tcp(acceptor_, std::bind(&server::handle_accept, this, std::placeholders::_1, std::placeholders::_2));
 }
+
+template <typename Kernel>
+void server<Kernel>::wait() const {
+    using namespace std::literals;
+    while (true) {
+        std::this_thread::sleep_for(1ms);
+    }
+}

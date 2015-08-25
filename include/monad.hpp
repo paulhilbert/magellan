@@ -1,26 +1,72 @@
 #ifndef MAGELLAN_MONAD_HPP_
 #define MAGELLAN_MONAD_HPP_
 
-#include <memory>
-#include <tuple>
+#include <utility>
 
 namespace magellan {
 
 
-template <class Derived>
+template <template <typename...> class M, typename... Ts>
 struct monad {
-    template <typename... Args>
-    using state_t = std::shared_ptr<std::tuple<Args...>>;
+    static auto mreturn(Ts&&... args) -> M<Ts...>;
 
-    template <typename T>
-    static state_t<T> ret(T&& value);
+    template <typename F>
+    static auto mbind(M<Ts...>&& m, F f) -> decltype(f(std::declval<Ts>()...));
 
-    template <typename T, typename... Args>
-    static state_t<Args..., T> join(state_t<Args...> state, T&& value);
-
-    template <typename... Args>
-    static auto last_of(state_t<Args...> state) -> decltype(std::ref(std::get<std::tuple_size<std::tuple<Args...>>::value - 1>(*state)));
+    //static auto mfail(std::string msg) -> M<Ts...>;
 };
+
+template <template <typename...> class M, typename... Ts>
+auto mreturn(Ts&&... args) -> M<Ts...>;
+
+template <template <typename...> class M, typename F, typename... Ts>
+auto mbind(M<Ts...>&& m, F f) -> decltype(f(std::declval<Ts>()...));
+
+template <template <typename...> class M, typename F, typename... Ts>
+auto mbind(M<std::tuple<Ts...>>&& m, F f) -> decltype(f(std::declval<Ts>()...));
+
+//template <template <typename...> class M, typename... Ts>
+//auto mfail(std::string msg) -> M<Ts...>;
+
+template <template <typename...> class M, typename... Ts>
+class monadic_chain {
+    public:
+        typedef M<Ts...> monad_t;
+
+        template <typename M1>
+        struct traits;
+
+    public:
+        monadic_chain(Ts&&... args);
+
+        monadic_chain(M<Ts...>&& m);
+
+        template <typename F>
+        auto operator()(F f);
+
+        monad_t operator()();
+
+        template <typename F, typename... Fs>
+        auto chain(F f, Fs... fs);
+
+        auto chain();
+
+    protected:
+        monadic_chain(std::tuple<Ts...>&& args);
+
+    protected:
+        monad_t monad_;
+};
+
+template <template <typename...> class M, typename... Ts>
+monadic_chain<M, Ts...> make_chain(Ts&&... args);
+
+template <template <typename...> class M, typename... Ts>
+monadic_chain<M, Ts...> make_chain(M<Ts...>&& m);
+
+template <template <typename...> class M, typename... Ts, typename... Fs>
+auto chain(M<Ts...>&& m, Fs... fs);
+
 
 #include "monad.ipp"
 

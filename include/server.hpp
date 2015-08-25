@@ -23,6 +23,8 @@ class server {
 
         void handle_accept(const asio::error_code& e, connection::ptr_t conn);
 
+        void wait() const;
+
     private:
         asio::ip::tcp::acceptor acceptor_;
         std::shared_ptr<Kernel> kernel_;
