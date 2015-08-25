@@ -1,22 +1,51 @@
-template <typename Kernel>
-template <typename... KernelArgs>
-inline server<Kernel>::server(asio::io_service& io_service, unsigned short port, KernelArgs&&... args) : acceptor_(io_service, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)), kernel_(new Kernel(std::forward<KernelArgs>(args)...)) {
-    connection::start_accept_tcp(acceptor_, std::bind(&server::handle_accept, this, std::placeholders::_1, std::placeholders::_2));
+#include <iostream>
+namespace magellan {
+
+template <typename Session>
+void
+server::accept(asio::io_context& io_context, short port) {
+    //using asio::ip::tcp;
+    //accept<Session>(io_context, port, [](tcp::socket s) {
+        //return std::make_shared<Session>(std::move(s));
+    //});
+    using asio::ip::tcp;
+    asio::spawn(io_context, [&](asio::yield_context yield) {
+        tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), port));
+
+        for (;;) {
+            asio::error_code ec;
+            tcp::socket socket(io_context);
+            acceptor.async_accept(socket, yield[ec]);
+            if (!ec) {
+                auto session = std::make_shared<Session>(std::move(socket));
+                session->start();
+            }
+        }
+    });
 }
 
-template <typename Kernel>
-inline void server<Kernel>::handle_accept(const asio::error_code& e, connection::ptr_t conn) {
-    if (!e) {
-        kernel_->accept(e, conn);
-    }
+template <typename Session, typename Func>
+void
+server::accept(asio::io_context& io_context, short port, Func&& factory) {
+    using asio::ip::tcp;
+    std::cout << port << "\n";
+    asio::spawn(io_context, [&](asio::yield_context yield) {
+        tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), port));
 
-    connection::start_accept_tcp(acceptor_, std::bind(&server::handle_accept, this, std::placeholders::_1, std::placeholders::_2));
+        for (;;) {
+            std::cout << "accepting"
+                      << "\n";
+            asio::error_code ec;
+            tcp::socket socket(io_context);
+            acceptor.async_accept(socket, yield[ec]);
+            if (!ec) {
+                std::cout << "session"
+                          << "\n";
+                auto session = factory(std::move(socket));
+                session->start();
+            }
+        }
+    });
 }
 
-template <typename Kernel>
-void server<Kernel>::wait() const {
-    using namespace std::literals;
-    while (true) {
-        std::this_thread::sleep_for(1ms);
-    }
-}
+} // magellan

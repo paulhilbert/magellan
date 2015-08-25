@@ -10,22 +10,44 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-	add_definitions(-fPIC)
-	add_definitions(-O3)
+    if (NOT WIN32)
+        add_definitions(-fPIC)
+    else()
+        add_definitions(-DM_LOG2E=1.44269504088896340736)
+    endif()
+	add_definitions(-O0)
 	add_definitions(-g)
 	add_definitions(-std=c++14)
     add_definitions(-Wall)
-    #add_definitions(-Wno-unused-function)
-    #add_definitions(-Wno-unused-local-typedefs)
+    add_definitions(-Wno-unused-function)
+    add_definitions(-Wno-unused-local-typedefs)
+    add_definitions(-Wno-deprecated-declarations)
+    add_definitions(-Wno-write-strings)
 endif()
 
+find_package(Boost COMPONENTS system filesystem coroutine)
+find_package(Eigen)
+find_package(Asio)
+
 file (GLOB_RECURSE obj RELATIVE "${PROJECT_SOURCE_DIR}" "src/*.cpp")
-#if (ASIO_FOUND)
-    add_library(magellan SHARED ${obj})
-    target_link_libraries(magellan "dl")
+if (EIGEN_FOUND AND ASIO_FOUND AND Boost_FOUND)
+	include_directories(${ASIO_INCLUDE_DIRS})
+	include_directories(${EIGEN_INCLUDE_DIRS})
+	include_directories(${Boost_INCLUDE_DIRS})
+
+	add_library(magellan SHARED ${obj})
+	target_link_libraries(magellan ${Boost_LIBRARIES} "pthread")
+
+	add_executable(echo_server "${PROJECT_SOURCE_DIR}/examples/echo_server.cpp")
+	target_link_libraries(echo_server magellan)
+
+	add_executable(echo_client "${PROJECT_SOURCE_DIR}/examples/echo_client.cpp")
+	target_link_libraries(echo_client magellan)
+
+	#add_executable(stream_server ${obj} "${PROJECT_SOURCE_DIR}/apps/stream_server.cpp")
+	#target_link_libraries(stream_server ${Boost_LIBRARIES} "pthread")
 
 	# install binary
-    install (TARGETS magellan DESTINATION lib)
-	# install header
-    install (DIRECTORY include/ DESTINATION include/magellan)
-#endif()
+    install (TARGETS magellan DESTINATION bin)
+endif()
+

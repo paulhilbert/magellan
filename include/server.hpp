@@ -1,15 +1,10 @@
 #ifndef MAGELLAN_SERVER_HPP_
 #define MAGELLAN_SERVER_HPP_
 
-#include <memory>
-
-#include <asio.hpp>
-#include "connection.hpp"
+#include "session.hpp"
 
 namespace magellan {
 
-
-template <class Kernel>
 class server {
     public:
         typedef std::shared_ptr<server>       ptr;
@@ -18,23 +13,24 @@ class server {
         typedef std::weak_ptr<const server>   const_wptr;
 
     public:
-        template <typename... KernelArgs>
-        server(asio::io_service& io_service, unsigned short port, KernelArgs&&... args);
+        server();
 
-        void handle_accept(const asio::error_code& e, connection::ptr_t conn);
+        virtual ~server();
 
-        void wait() const;
+        template <typename Session>
+        void accept(asio::io_context& io_context, short port);
 
-    private:
-        asio::ip::tcp::acceptor acceptor_;
-        std::shared_ptr<Kernel> kernel_;
+        template <typename Session, typename Func>
+        void accept(asio::io_context& io_context, short port, Func&& factory);
 
+        void run();
+
+    //protected:
+//asio::io_context io_context_;
 };
-
-#include "server.ipp"
-
 
 } // magellan
 
+#include "server.ipp"
 
 #endif /* MAGELLAN_SERVER_HPP_ */
