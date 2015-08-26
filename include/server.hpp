@@ -20,13 +20,10 @@ class server {
         template <typename Session>
         void accept(asio::io_context& io_context, short port);
 
-        template <typename Session, typename Func>
-        void accept(asio::io_context& io_context, short port, Func&& factory);
+        //template <typename Session, typename Func>
+        //void accept(asio::io_context& io_context, short port, Func&& factory);
 
-        void run();
-
-    //protected:
-//asio::io_context io_context_;
+        //void run();
 };
 
 } // magellan

@@ -26,13 +26,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 find_package(Boost COMPONENTS system filesystem coroutine)
-find_package(Eigen)
 find_package(Asio)
 
 file (GLOB_RECURSE obj RELATIVE "${PROJECT_SOURCE_DIR}" "src/*.cpp")
-if (EIGEN_FOUND AND ASIO_FOUND AND Boost_FOUND)
+if (ASIO_FOUND AND Boost_FOUND)
 	include_directories(${ASIO_INCLUDE_DIRS})
-	include_directories(${EIGEN_INCLUDE_DIRS})
 	include_directories(${Boost_INCLUDE_DIRS})
 
 	add_library(magellan SHARED ${obj})
