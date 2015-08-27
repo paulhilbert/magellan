@@ -36,11 +36,17 @@ if (ASIO_FOUND AND Boost_FOUND)
 	add_library(magellan SHARED ${obj})
 	target_link_libraries(magellan ${Boost_LIBRARIES} "pthread")
 
+    # echo example
 	add_executable(echo_server "${PROJECT_SOURCE_DIR}/examples/echo_server.cpp")
 	target_link_libraries(echo_server magellan)
-
 	add_executable(echo_client "${PROJECT_SOURCE_DIR}/examples/echo_client.cpp")
 	target_link_libraries(echo_client magellan)
+
+    # send_container example
+	add_executable(send_container_server "${PROJECT_SOURCE_DIR}/examples/send_container_server.cpp")
+	target_link_libraries(send_container_server magellan)
+	add_executable(send_container_client "${PROJECT_SOURCE_DIR}/examples/send_container_client.cpp")
+	target_link_libraries(send_container_client magellan)
 
 	#add_executable(stream_server ${obj} "${PROJECT_SOURCE_DIR}/apps/stream_server.cpp")
 	#target_link_libraries(stream_server ${Boost_LIBRARIES} "pthread")

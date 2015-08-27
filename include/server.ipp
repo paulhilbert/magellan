@@ -8,20 +8,6 @@ server::accept(short port) {
     accept<Session>(port, [](tcp::socket s) {
         return std::make_shared<Session>(std::move(s));
     });
-    //using asio::ip::tcp;
-    //asio::spawn(io_context, [port, &io_context](asio::yield_context yield) {
-        //tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), port));
-
-        //for (;;) {
-            //asio::error_code ec;
-            //tcp::socket socket(io_context);
-            //acceptor.async_accept(socket, yield[ec]);
-            //if (!ec) {
-                //auto session = std::make_shared<Session>(std::move(socket));
-                //session->start();
-            //}
-        //}
-    //});
 }
 
 template <typename Session, typename Func>

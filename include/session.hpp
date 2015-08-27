@@ -8,6 +8,7 @@
 #include <asio/steady_timer.hpp>
 
 #include "optional.hpp"
+#include "stream_packet.hpp"
 
 namespace magellan {
 
@@ -21,6 +22,9 @@ public:
     using duration = std::chrono::duration<int64_t, Period>;
     template <typename Period = std::ratio<1>>
     using opt_duration = std::optional<duration<Period>>;
+
+    typedef ::asio::ip::tcp::socket socket_t;
+    typedef ::asio::yield_context yield_context_t;
 
 public:
     session(asio::ip::tcp::socket socket);
@@ -41,6 +45,26 @@ public:
 
 protected:
     virtual void perform(asio::ip::tcp::socket&, asio::yield_context&);
+
+    template <int MaxBodyLength, typename InputIterator>
+    void send_stream(InputIterator first, InputIterator last, socket_t& s,
+                     yield_context_t& yc);
+
+    template <int MaxBodyLength, typename T>
+    void send_chunk(T&& v, socket_t& s, yield_context_t& yc);
+
+    template <int MaxBodyLength, typename OutputIterator>
+    bool receive_stream(OutputIterator first, socket_t& s, yield_context_t& yc);
+
+    template <int MaxBodyLength, typename T>
+    std::optional<T> receive_chunk(socket_t& s, yield_context_t& yc);
+
+    template <int MaxBodyLength>
+    void send_packets_(const std::vector<stream_packet<MaxBodyLength>>& packets,
+                       socket_t& s, yield_context_t& yc);
+
+    template <typename Packet>
+    std::optional<Packet> receive_packet_(socket_t& s, yield_context_t& yc);
 
 protected:
     asio::ip::tcp::socket socket_;

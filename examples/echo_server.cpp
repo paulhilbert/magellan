@@ -42,7 +42,8 @@ int main (int argc, char const* argv[]) {
         }
 
         magellan::server server;
-        server.accept<echo_session>(9003);
+        short port = std::atoi(argv[1]);
+        server.accept<echo_session>(port);
         server.run();
     } catch (std::exception& e) {
         std::cerr << e.what() << "\n";
