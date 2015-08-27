@@ -18,12 +18,15 @@ class server {
         virtual ~server();
 
         template <typename Session>
-        void accept(asio::io_context& io_context, short port);
+        void accept(short port);
 
-        //template <typename Session, typename Func>
-        //void accept(asio::io_context& io_context, short port, Func&& factory);
+        template <typename Session, typename Func>
+        void accept(short port, Func&& factory);
 
-        //void run();
+        void run();
+
+    protected:
+        asio::io_context io_context_;
 };
 
 } // magellan

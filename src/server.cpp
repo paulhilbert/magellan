@@ -6,9 +6,9 @@ server::server() {}
 
 server::~server() {}
 
-//void
-//server::run() {
-    //io_context_.run();
-//}
+void
+server::run() {
+    io_context_.run();
+}
 
 }  // magellan

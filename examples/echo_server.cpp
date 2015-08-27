@@ -1,7 +1,10 @@
 #include <iostream>
-#include <server.hpp>
-
+#include <memory>
+#include <asio.hpp>
+#include <asio/spawn.hpp>
 using asio::ip::tcp;
+
+#include <server.hpp>
 
 class echo_session : public magellan::session {
     public:
@@ -13,6 +16,7 @@ class echo_session : public magellan::session {
     public:
         echo_session(tcp::socket socket)
             : magellan::session(std::move(socket)) {}
+
         virtual ~echo_session() {}
 
     protected:
@@ -33,10 +37,9 @@ int main (int argc, char const* argv[]) {
             return 1;
         }
 
-        asio::io_context io_context;
         magellan::server server;
-        server.accept<echo_session>(io_context, 9003);
-        io_context.run();
+        server.accept<echo_session>(9003);
+        server.run();
     } catch (std::exception& e) {
         std::cerr << e.what() << "\n";
     }
