@@ -4,7 +4,7 @@ using asio::ip::tcp;
 
 namespace magellan {
 
-session::session(tcp::socket socket) : socket_(std::move(socket)), strand_(socket_.get_io_context()) {
+session::session(tcp::socket socket) : socket_(std::move(socket)), strand_(socket_.get_io_context()), timer_(socket_.get_io_context()) {
 }
 
 tcp::socket&
@@ -22,13 +22,13 @@ session::context() {
     return socket_.get_io_context();
 }
 
-void session::start() {
-    async_do([this] (tcp::socket& s, asio::yield_context& yc) {
-        perform(s, yc);
-    });
+std::optional<std::chrono::milliseconds>
+session::expiration() const {
+    return std::nullopt;
 }
 
-void session::perform(tcp::socket& s, asio::yield_context&) {
+void
+session::perform(tcp::socket& s, asio::yield_context&) {
     s.close();
 }
 

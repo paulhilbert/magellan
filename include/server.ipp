@@ -37,7 +37,8 @@ server::accept(short port, Func&& factory) {
             acceptor.async_accept(socket, yield[ec]);
             if (!ec) {
                 auto session = factory(std::move(socket));
-                session->start();
+                std::optional<std::chrono::milliseconds> expires = session->expiration();
+                session->start(expires);
             }
         }
     });

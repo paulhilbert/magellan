@@ -19,6 +19,10 @@ class echo_session : public magellan::session {
 
         virtual ~echo_session() {}
 
+        std::optional<std::chrono::milliseconds> expiration() {
+            return std::chrono::milliseconds(std::chrono::seconds(5));
+        }
+
     protected:
         void perform(asio::ip::tcp::socket& s, asio::yield_context& yc) {
             char data[128];
