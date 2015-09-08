@@ -17,11 +17,8 @@ class client {
 
         virtual ~client();
 
-        template <typename Session>
-        void connect(std::string host, short port);
-
-        template <typename Session, typename Func>
-        void connect(std::string host, short port, Func&& factory);
+        template <typename Session, typename... Args>
+        void connect(std::string host, short port, Args&&... args);
 
         void run();
 

@@ -1,3 +1,5 @@
+#include <fstream>
+
 namespace magellan {
 
 template <typename Func, typename Period>
@@ -9,7 +11,7 @@ session::async_do(Func&& f, opt_duration<Period> expiration) {
             if (expiration) {
                 timer_.expires_from_now(*expiration);
             }
-            f(std::ref(socket_), std::ref(yield));
+            f(std::ref(socket_), yield);
         } catch (std::exception& e) {
             socket_.close();
             timer_.cancel();
@@ -31,14 +33,14 @@ session::async_do(Func&& f, opt_duration<Period> expiration) {
 template <typename Period>
 inline void
 session::start(opt_duration<Period> expiration) {
-    async_do([this](socket_t& s, yield_context_t& yc) { perform(s, yc); },
+    async_do([this](socket_t& s, yield_context_t yc) { perform(s, yc); },
              expiration);
 }
 
 template <int MaxBodyLength, typename InputIterator>
 inline void
 session::send_stream(InputIterator first, InputIterator last, socket_t& s,
-                     yield_context_t& yc) {
+                     yield_context_t yc) {
     std::vector<stream_packet<MaxBodyLength>> packets =
         make_stream_packets<MaxBodyLength>(first, last);
     send_packets_<MaxBodyLength>(packets, s, yc);
@@ -46,7 +48,7 @@ session::send_stream(InputIterator first, InputIterator last, socket_t& s,
 
 template <int MaxBodyLength, typename T>
 inline void
-session::send_chunk(T&& v, socket_t& s, yield_context_t& yc) {
+session::send_chunk(T&& v, socket_t& s, yield_context_t yc) {
     std::vector<stream_packet<MaxBodyLength>> packets =
         make_chunk_packets<MaxBodyLength>(std::forward<T>(v));
     send_packets_<MaxBodyLength>(packets, s, yc);
@@ -55,7 +57,7 @@ session::send_chunk(T&& v, socket_t& s, yield_context_t& yc) {
 template <int MaxBodyLength, typename OutputIterator>
 inline bool
 session::receive_stream(OutputIterator first, socket_t& s,
-                        yield_context_t& yc) {
+                        yield_context_t yc) {
     typedef stream_packet<MaxBodyLength> packet_t;
     typedef typename OutputIterator::value_type value_t;
 
@@ -72,7 +74,7 @@ session::receive_stream(OutputIterator first, socket_t& s,
 
 template <int MaxBodyLength, typename T>
 inline std::optional<T>
-session::receive_chunk(socket_t& s, yield_context_t& yc) {
+session::receive_chunk(socket_t& s, yield_context_t yc) {
     typedef stream_packet<MaxBodyLength> packet_t;
 
     std::vector<packet_t> packets;
@@ -97,7 +99,7 @@ session::receive_chunk(socket_t& s, yield_context_t& yc) {
 template <int MaxBodyLength>
 inline void
 session::send_packets_(const std::vector<stream_packet<MaxBodyLength>>& packets,
-                      socket_t& s, yield_context_t& yc) {
+                      socket_t& s, yield_context_t yc) {
     for (const auto& current_packet : packets) {
         asio::async_write(
             s, asio::buffer(current_packet.data(), current_packet.length()),
@@ -107,7 +109,7 @@ session::send_packets_(const std::vector<stream_packet<MaxBodyLength>>& packets,
 
 template <typename Packet>
 inline std::optional<Packet>
-session::receive_packet_(socket_t& s, yield_context_t& yc) {
+session::receive_packet_(socket_t& s, yield_context_t yc) {
     Packet current_packet;
     asio::error_code error;
     // read header

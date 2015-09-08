@@ -6,6 +6,7 @@
 #include <cereal/types/utility.hpp>
 #include <cereal/types/tuple.hpp>
 #include <cereal/types/memory.hpp>
+#include <cereal/types/string.hpp>
 
 namespace magellan {
 

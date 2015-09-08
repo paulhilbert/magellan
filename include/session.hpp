@@ -29,6 +29,8 @@ public:
 public:
     session(asio::ip::tcp::socket socket);
 
+    virtual ~session() {}
+
     asio::ip::tcp::socket& socket();
 
     const asio::ip::tcp::socket& socket() const;
@@ -44,27 +46,27 @@ public:
     virtual std::optional<std::chrono::milliseconds> expiration() const;
 
 protected:
-    virtual void perform(asio::ip::tcp::socket&, asio::yield_context&);
+    virtual void perform(asio::ip::tcp::socket&, asio::yield_context);
 
     template <int MaxBodyLength, typename InputIterator>
     void send_stream(InputIterator first, InputIterator last, socket_t& s,
-                     yield_context_t& yc);
+                     yield_context_t yc);
 
     template <int MaxBodyLength, typename T>
-    void send_chunk(T&& v, socket_t& s, yield_context_t& yc);
+    void send_chunk(T&& v, socket_t& s, yield_context_t yc);
 
     template <int MaxBodyLength, typename OutputIterator>
-    bool receive_stream(OutputIterator first, socket_t& s, yield_context_t& yc);
+    bool receive_stream(OutputIterator first, socket_t& s, yield_context_t yc);
 
     template <int MaxBodyLength, typename T>
-    std::optional<T> receive_chunk(socket_t& s, yield_context_t& yc);
+    std::optional<T> receive_chunk(socket_t& s, yield_context_t yc);
 
     template <int MaxBodyLength>
     void send_packets_(const std::vector<stream_packet<MaxBodyLength>>& packets,
-                       socket_t& s, yield_context_t& yc);
+                       socket_t& s, yield_context_t yc);
 
     template <typename Packet>
-    std::optional<Packet> receive_packet_(socket_t& s, yield_context_t& yc);
+    std::optional<Packet> receive_packet_(socket_t& s, yield_context_t yc);
 
 protected:
     asio::ip::tcp::socket socket_;

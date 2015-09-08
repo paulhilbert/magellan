@@ -28,7 +28,7 @@ session::expiration() const {
 }
 
 void
-session::perform(tcp::socket& s, asio::yield_context&) {
+session::perform(tcp::socket& s, asio::yield_context) {
     s.close();
 }
 

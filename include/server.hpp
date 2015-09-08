@@ -17,11 +17,8 @@ class server {
 
         virtual ~server();
 
-        template <typename Session>
-        void accept(short port);
-
-        template <typename Session, typename Func>
-        void accept(short port, Func&& factory);
+        template <typename Session, typename... Args>
+        void accept(short port, Args&&... args);
 
         void run();
 

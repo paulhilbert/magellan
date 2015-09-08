@@ -15,7 +15,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     else()
         add_definitions(-DM_LOG2E=1.44269504088896340736)
     endif()
-	add_definitions(-O3)
+	add_definitions(-O0)
 	add_definitions(-g)
 	add_definitions(-std=c++14)
     add_definitions(-Wall)
@@ -23,6 +23,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(-Wno-unused-local-typedefs)
     add_definitions(-Wno-deprecated-declarations)
     add_definitions(-Wno-write-strings)
+    add_definitions(-DBOOST_USE_VALGRIND)
+    add_definitions(-DBOOST_OPTIONAL_USE_OLD_DEFINITION_OF_NONE)
 endif()
 
 find_package(Boost COMPONENTS system filesystem coroutine)
@@ -52,6 +54,8 @@ if (ASIO_FOUND AND Boost_FOUND)
 	#target_link_libraries(stream_server ${Boost_LIBRARIES} "pthread")
 
 	# install binary
-    install (TARGETS magellan DESTINATION bin)
+    install (TARGETS magellan DESTINATION lib)
+	# install header
+	install (DIRECTORY include/ DESTINATION include/magellan)
 endif()
 
