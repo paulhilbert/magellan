@@ -6,7 +6,7 @@
 
 namespace magellan {
 
-template <typename Header, int MaxBodyLength = 512>
+template <typename Header, int MaxBodyLength = 5000>
 class packet : public base_packet<Header, MaxBodyLength> {
 public:
     typedef std::shared_ptr<packet<Header, MaxBodyLength>>       ptr;
